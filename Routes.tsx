@@ -4,9 +4,9 @@ import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import DrawerPage from './Pages/DrawerPage';
 import LoginPage from './Pages/LoginPage'
-import Home from './Pages/Home'
+import ProductsPage from './Pages/ProductsPage'
 const MyStack = createStackNavigator({
-  Home: { screen: Home },
+  Home: { screen: ProductsPage },
   //Lamp: { screen: Lamp },
   //Profile:{screen:Profile},
  // Policy:{screen:Policy},

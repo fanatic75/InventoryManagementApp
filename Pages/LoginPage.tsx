@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import * as Config from "../config.json";
 import { StyleSheet, View, Image, StatusBar, ScrollView } from 'react-native';
 import { withTheme, Headline, TextInput, Text, Button } from "react-native-paper";
+import errorHandler from "../Services/errorHandler";
 
 const authenticate : string = '/users/authenticate';
 
@@ -17,7 +18,7 @@ export const LoginPage = (props) => {
         container: {
             marginTop:Constants.statusBarHeight,
             flex: 1,
-            backgroundColor:colors.background,
+            backgroundColor:colors.accent,
         },
         logoContainer: {
             flex: 2,
@@ -33,17 +34,24 @@ export const LoginPage = (props) => {
         inputContainer: {
             flex: 3,
             margin: 60
+        },
+        inputs:{
+            backgroundColor:colors.accent,
+            marginTop:20,
         }
     
     
     
     });
 
-
     useEffect(()=>{
+        let id=null;
+        let branch=null;
         async function isLoggedIn(){
             const login=await deviceStorage.getItem('login');
-            
+             id=await deviceStorage.getItem('_id');
+             branch=await deviceStorage.getItem('branch');
+
             if(login)   
                 return true;
             return false; 
@@ -51,7 +59,7 @@ export const LoginPage = (props) => {
        isLoggedIn()
        .then((res)=>{
             if(res)   
-        props.navigation.navigate('Drawer');
+        props.navigation.navigate('Home',{id,branch});
        
        }).catch(err=>alert(err));
        
@@ -63,6 +71,7 @@ export const LoginPage = (props) => {
     const [password, setPassword]: [string, Dispatch<any>] = useState(null);
     const [loading,setLoading]:[boolean,Dispatch<any>]=useState(false);
         const handleAuthentication:()=>void =  async ()=>{
+           if(username!==null&&password!==null){
             setLoading(true);
             try{
                 const res= await axios({
@@ -84,13 +93,17 @@ export const LoginPage = (props) => {
                     });
                     setUsername(null);
                     setPassword(null);
-                    props.navigation.navigate('Drawer');
+                    const branch=importantData.branch;
+                    props.navigation.navigate('Home',{branch});
                 }
             }
             catch(e){
                 setLoading(false);
-                alert(e);
+                errorHandler(e);
             }
+            return;
+           }
+           alert('username or password cannot be empty');
 
            
 
@@ -124,10 +137,10 @@ export const LoginPage = (props) => {
 
 
                     <View style={styles.inputContainer}>
-                        <TextInput value={username} label="Username" onChangeText={text=>setUsername(text)}  onSubmitEditing={() => { this.secondTextInput.focus(); }} blurOnSubmit={false} returnKeyType="go" keyboardType="email-address" />
-                        <TextInput value={password} onChangeText={text => setPassword(text)} label="Password"  onSubmitEditing={handleAuthentication} secureTextEntry={true} multiline={false} ref={(input) => { this.secondTextInput = input; }} returnKeyType="done" />
+                        <TextInput value={username} label="Username" onChangeText={text=>setUsername(text)} style={styles.inputs} onSubmitEditing={() => { this.secondTextInput.focus(); }} blurOnSubmit={false} returnKeyType="go" keyboardType="email-address" />
+                        <TextInput value={password} onChangeText={text => setPassword(text)} label="Password" style={styles.inputs}  onSubmitEditing={handleAuthentication} secureTextEntry={true} multiline={false} ref={(input) => { this.secondTextInput = input; }} returnKeyType="done" />
 
-                        <Button style={{ marginTop: 10 }}  onPress={handleAuthentication} mode="contained" >
+                        <Button style={{ marginTop: 20 }}  onPress={handleAuthentication} mode="contained" >
                             Login
                              </Button>
 
