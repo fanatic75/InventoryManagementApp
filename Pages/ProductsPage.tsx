@@ -24,8 +24,9 @@ const ProductsPage = (props) => {
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState(null);
-   
-    const [productState,setProductState]=useState(null);
+    useEffect(()=>{
+        console.log(products);
+    },[products])
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
@@ -40,14 +41,14 @@ const ProductsPage = (props) => {
                 if (res)
                     if (res.data)
                         if (res.data.products){
-                        const productStateInitial = res.data.products.map(()=>{
+                        const productStateInitial = res.data.products.map((product)=>{
                             return {
                                 isAddPressed:false,
-                                quantity:0,
+                                cartQuantity:0,
+                                ...product,
                             }
                         });
-                        setProductState(productStateInitial);
-                            setProducts(res.data.products);
+                            setProducts(productStateInitial);
                     }
                 setLoading(false);
                 return;
@@ -135,13 +136,13 @@ const ProductsPage = (props) => {
                         data={products} renderItem={({ item,index }: any) => {
                             if (searchQuery)
                                 return productExists(item) ? <Product
-                                    name={item.name} quantity={productState[index]['quantity']} isAddPressed={productState[index]['isAddPressed']} productState={productState}  setProductState={setProductState}   index={index} stock={item.quantity} /> : null;
+                                    name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products}  setProducts={setProducts}   index={index} stock={item.quantity} /> : null;
                             else
                                 return <Product
-                                    name={item.name} quantity={productState[index]['quantity']} isAddPressed={productState[index]['isAddPressed']} productState={productState}  setProductState={setProductState}   index={index} stock={item.quantity} />
+                                    name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products}  setProducts={setProducts}   index={index} stock={item.quantity} />
 
                         }} keyExtractor={(item: any) => item._id} />}
-                   {productState&&productState.some(product=>product.isAddPressed===true)&& <View style={{ flex: 1,justifyContent:'center',alignItems:'center',margin:10 }}>
+                   {products&&products.some(product=>product.isAddPressed===true)&& <View style={{ flex: 1,justifyContent:'center',alignItems:'center',margin:10 }}>
                         <Button style={{ width: 200, height: 50, alignItems: 'center', justifyContent: 'center' }} color={colors.primary} mode='contained' icon='check' >MARK AS SOLD</Button>
                     </View>}
 

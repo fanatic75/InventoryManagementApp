@@ -2,7 +2,7 @@ import React, { useState, Dispatch } from 'react';
 import { View } from 'react-native';
 import { withTheme, Avatar, Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
-const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProductState, productState }: { productState: Array<{ quantity: number, isAddPressed: boolean }>, index: number, name: string, stock: string, theme: any, quantity: number, setProductState: Dispatch<any>, isAddPressed: boolean }) => {
+const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProducts, products }: { products:Array<any>, index: number, name: string, stock: string, theme: any, quantity: number, setProducts: Dispatch<any>, isAddPressed: boolean }) => {
     const { colors } = theme;
     const style = StyleSheet.create({
         cardContainer: {
@@ -27,12 +27,12 @@ const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProduct
 
     const addQuantity = () => {
         if (quantity.toString() < stock) {
-            const tempArray=[...productState];
-            tempArray[index]['quantity']=quantity+1;
+            const tempArray=[...products];
+            tempArray[index]['cartQuantity']=quantity+1;
             tempArray[index]['isAddPressed']=true;
 
 
-            setProductState(tempArray);
+            setProducts(tempArray);
         }
         else
             alert('Cannot sell more than stock quantity');
@@ -41,16 +41,16 @@ const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProduct
     }
 
     const deleteQuantity = () => {
-        const tempArray=[...productState];
+        const tempArray=[...products];
         if (quantity < 2) {
             tempArray[index]['isAddPressed']=false;
-            tempArray[index]['quantity']=0;
+            tempArray[index]['cartQuantity']=0;
 
             
         }
         else
-        tempArray[index]['quantity']=quantity-1;
-        setProductState(tempArray);
+        tempArray[index]['cartQuantity']=quantity-1;
+        setProducts(tempArray);
     }
 
     return (
