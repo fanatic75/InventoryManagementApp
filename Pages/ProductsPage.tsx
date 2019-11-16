@@ -3,7 +3,7 @@ import { SafeAreaView, RefreshControl, ScrollView, View, FlatList, Dimensions } 
 import { DrawerActions } from 'react-navigation-drawer';
 import Constants from 'expo-constants';
 import { BackHandler } from "react-native";
-import { withTheme, IconButton, Snackbar, Searchbar } from 'react-native-paper';
+import { withTheme, IconButton,Title, Snackbar, Searchbar, Button } from 'react-native-paper';
 import { withNavigationFocus } from 'react-navigation';
 import axios from 'axios';
 import * as Config from '../config.json';
@@ -12,6 +12,8 @@ import wait from '../Services/wait';
 import { deviceStorage } from '../Services/devicestorage';
 import Loading from '../Components/Loading';
 import Product from '../Components/Product';
+import BottomSheet from 'reanimated-bottom-sheet';
+
 const pressToExit = 1;
 
 const ProductsPage = (props) => {
@@ -22,7 +24,8 @@ const ProductsPage = (props) => {
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState(null);
-
+   
+    const [productState,setProductState]=useState(null);
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
@@ -36,8 +39,16 @@ const ProductsPage = (props) => {
                 });
                 if (res)
                     if (res.data)
-                        if (res.data.products)
+                        if (res.data.products){
+                        const productStateInitial = res.data.products.map(()=>{
+                            return {
+                                isAddPressed:false,
+                                quantity:0,
+                            }
+                        });
+                        setProductState(productStateInitial);
                             setProducts(res.data.products);
+                    }
                 setLoading(false);
                 return;
             }
@@ -52,10 +63,12 @@ const ProductsPage = (props) => {
     useEffect(() => {
         fetchProducts();
         console.log('use effect with fetch products');
-        }, [fetchProducts])
+    }, [fetchProducts])
 
 
-
+ 
+    
+    
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
@@ -80,6 +93,7 @@ const ProductsPage = (props) => {
                 return true;
             }
         });
+
         console.log('use effect for exit button');
 
         return () => {
@@ -89,44 +103,54 @@ const ProductsPage = (props) => {
         }
     }, [exitCount]);
 
-
+    
     const productExists = product => {
         return product.name.toLowerCase().includes(searchQuery.trim().toLowerCase());
     }
-
+    
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, marginTop: Constants.statusBarHeight }}>
-            <Snackbar style={{ position: 'absolute', bottom: 0 }} duration={3000} onDismiss={() => { setSnackBarVisibility(false); setExitCount(0); }} visible={snackBarVisibility}>
-                "Press Back again to Exit the App."
+        <>
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, marginTop: Constants.statusBarHeight }}>
+                <Snackbar style={{ position: 'absolute', bottom: 0 }} duration={3000} onDismiss={() => { setSnackBarVisibility(false); setExitCount(0); }} visible={snackBarVisibility}>
+                    "Press Back again to Exit the App."
             </Snackbar>
-            <Searchbar
-                placeholder="Search your Products"
-                onChangeText={query => setSearchQuery(query)}
-                value={searchQuery}
-                style={{ margin: 10 }}
-                theme={{ roundness: 10 }}
-            />
-            {loading ? <Loading /> : <ScrollView
-                style={{ flex: 1 }}
-                refreshControl={
-                    <RefreshControl size={30} refreshing={refreshing} onRefresh={onRefresh} />
-                }
-            >
-                <FlatList style={{ flexDirection: 'column' }} numColumns={Dimensions.get('window').width>600?3:2}
-                    data={products} renderItem={({ item }:any) => {
-                        if (searchQuery)
-                            return productExists(item) ? <Product 
-                                name={item.name} stock={item.quantity} /> : null;
-                        else
-                            return <Product 
-                                name={item.name} stock={item.quantity} />
+                
+          
 
-                    }} keyExtractor={(item:any) => item._id}/>
+                <Searchbar
+                    placeholder="Search your Products"
+                    onChangeText={query => setSearchQuery(query)}
+                    value={searchQuery}
+                    style={{ margin: 10 }}
+                    theme={{ roundness: 10 }}
+                />
+                {loading ? <Loading /> : <ScrollView
+                    style={{ flex: 1 }}
+                    refreshControl={
+                        <RefreshControl size={30} refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                >
+                   {products!==null&& <FlatList style={{ flexDirection: 'column' }} numColumns={Dimensions.get('window').width > 800 ? 3 : 2}
+                        data={products} renderItem={({ item,index }: any) => {
+                            if (searchQuery)
+                                return productExists(item) ? <Product
+                                    name={item.name} quantity={productState[index]['quantity']} isAddPressed={productState[index]['isAddPressed']} productState={productState}  setProductState={setProductState}   index={index} stock={item.quantity} /> : null;
+                            else
+                                return <Product
+                                    name={item.name} quantity={productState[index]['quantity']} isAddPressed={productState[index]['isAddPressed']} productState={productState}  setProductState={setProductState}   index={index} stock={item.quantity} />
+
+                        }} keyExtractor={(item: any) => item._id} />}
+                   {productState&&productState.some(product=>product.isAddPressed===true)&& <View style={{ flex: 1,justifyContent:'center',alignItems:'center',margin:10 }}>
+                        <Button style={{ width: 200, height: 50, alignItems: 'center', justifyContent: 'center' }} color={colors.primary} mode='contained' icon='check' >MARK AS SOLD</Button>
+                    </View>}
 
 
-            </ScrollView>}
-        </SafeAreaView>
+
+
+                </ScrollView>}
+            </SafeAreaView>
+        </>
     )
 }
 
