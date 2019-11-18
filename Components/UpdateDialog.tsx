@@ -17,7 +17,7 @@ const UpdateDialog = (props)=>{
                     theme={{ roundness: 10 }}
                     visible={props.visibility}
                     onDismiss={hideDialog}>
-                    <Dialog.Title>Update</Dialog.Title>
+                    <Dialog.Title>{props.title}</Dialog.Title>
                     <Dialog.Content>
                        {props.children}
                     </Dialog.Content>

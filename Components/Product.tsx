@@ -2,7 +2,7 @@ import React, {  Dispatch } from 'react';
 import { View } from 'react-native';
 import { withTheme,  Button, Card, Title,  IconButton } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
-const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProducts, products }: { products:Array<any>, index: number, name: string, stock: string, theme: any, quantity: number, setProducts: Dispatch<any>, isAddPressed: boolean }) => {
+const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProducts, products ,price}: { price:number,products:Array<any>, index: number, name: string, stock: string, theme: any, quantity: number, setProducts: Dispatch<any>, isAddPressed: boolean }) => {
     const { colors } = theme;
     const style = StyleSheet.create({
         cardContainer: {
@@ -59,6 +59,8 @@ const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProduct
             <Card.Content style={{ flex: 1 }}>
                 <Title>Quantity Available </Title>
                 <Title>{stock}</Title>
+                <Title>Price per piece </Title>
+                <Title>{price}</Title>
             </Card.Content>
             <Card.Actions style={{ flex: 1, margin: 10 }}>
                 {!isAddPressed ? <Button style={{ width: 100, height: 50, alignItems: 'center', justifyContent: 'center' }} color={colors.primary} onPress={() => { addQuantity(); }} icon='plus' mode='outlined'>ADD</Button>

@@ -180,7 +180,7 @@ const ProductsPage = (props) => {
                                 if (productExists(item)) {
                                     if (item.quantity !== 0)
                                         return <Product
-                                            name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products} setProducts={setProducts} index={index} stock={item.quantity} />
+                                            name={item.name} price={item.price} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products} setProducts={setProducts} index={index} stock={item.quantity} />
 
                                 } else {
                                     return null;
@@ -191,7 +191,7 @@ const ProductsPage = (props) => {
 
                                 if (item.quantity !== 0)
                                     return <Product
-                                        name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products} setProducts={setProducts} index={index} stock={item.quantity} />
+                                        name={item.name} price={item.price} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products} setProducts={setProducts} index={index} stock={item.quantity} />
                             }
 
                         }} keyExtractor={(item: any) => item._id} />}

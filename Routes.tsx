@@ -7,12 +7,13 @@ import LoginPage from './Pages/LoginPage'
 import ProductsPage from './Pages/ProductsPage'
 import AdminPage from './Pages/AdminPage';
 import Loading from './Components/Loading';
+import ProductsEmployees from './Pages/ProductsEmployees';
 const MyStack = createStackNavigator({
   Loading:{screen:Loading},
   //@ts-ignore
   Admin:{screen:AdminPage},
   Home: { screen: ProductsPage },
-  //Profile:{screen:Profile},
+  ProductsEmployees:{screen:ProductsEmployees},
  // Policy:{screen:Policy},
 //  Help:{screen:Help},
  

@@ -33,14 +33,7 @@ const DrawerPage = (props: { theme: any, navigation: any }) => {
                     </View>
                     <View >
                         <List.Section>
-                            <List.Item
-                                title="Home"
-                                left={() => <List.Icon icon="home" />}
-                            />
-                            <List.Item
-                                title="Profile"
-                                left={() => <List.Icon icon="account-circle" />}
-                            />
+                          
 
                             <List.Item
                                 title="Signout"
@@ -54,20 +47,7 @@ const DrawerPage = (props: { theme: any, navigation: any }) => {
                         </List.Section>
                     </View>
                 </View>
-                <Divider style={{ height: 1 }} />
-                <View style={styles.secondSection}>
-                    <List.Section>
-                        <List.Subheader>About</List.Subheader>
-                        <List.Item
-                            title="Help"
-                            left={() => <List.Icon icon="help" />}
-                        />
-                        <List.Item
-                            title="Policy"
-                            left={() => <List.Icon icon="share" />}
-                        />
-                    </List.Section>
-                </View>
+               
            
         </SafeAreaView>
          </ScrollView>

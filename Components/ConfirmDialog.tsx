@@ -4,8 +4,8 @@ const ConfirmDialog = (props) => {
     const {colors}=props.theme;
 
 
-    const saveValue = () => {
-        props.applyAction();
+    const saveValue = async() => {
+        await props.applyAction();
         hideDialog();
         props.onRefresh();
     }
