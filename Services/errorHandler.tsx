@@ -1,7 +1,11 @@
 
 
 export default function errorHandler (error) {
-    if (error.response) {
+  if(typeof error==='string'){
+    alert(error);
+    return;
+  }
+  if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
       
@@ -19,7 +23,8 @@ export default function errorHandler (error) {
       alert(error.request);
     } else {
       // Something happened in setting up the request that triggered an Error
+      if(error.message)
       alert('Error '+error.message);
+      
     }
-    console.log(error.config);
   }

@@ -5,9 +5,13 @@ import { createStackNavigator } from 'react-navigation-stack';
 import DrawerPage from './Pages/DrawerPage';
 import LoginPage from './Pages/LoginPage'
 import ProductsPage from './Pages/ProductsPage'
+import AdminPage from './Pages/AdminPage';
+import Loading from './Components/Loading';
 const MyStack = createStackNavigator({
+  Loading:{screen:Loading},
+  //@ts-ignore
+  Admin:{screen:AdminPage},
   Home: { screen: ProductsPage },
-  //Lamp: { screen: Lamp },
   //Profile:{screen:Profile},
  // Policy:{screen:Policy},
 //  Help:{screen:Help},
@@ -30,6 +34,7 @@ const MyDrawer = createDrawerNavigator({
 
 
 const RootStack = createStackNavigator({
+    Loading:Loading,
     Login: LoginPage,
     Drawer:MyDrawer,
   }, {

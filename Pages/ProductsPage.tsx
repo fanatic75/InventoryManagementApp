@@ -3,7 +3,8 @@ import { SafeAreaView, RefreshControl, ScrollView, View, FlatList, Dimensions } 
 import { DrawerActions } from 'react-navigation-drawer';
 import Constants from 'expo-constants';
 import { BackHandler } from "react-native";
-import { withTheme, IconButton,Title, Snackbar, Searchbar, Button } from 'react-native-paper';
+import { withTheme, IconButton, Snackbar, Searchbar, Button } from 'react-native-paper';
+import ConfirmDialog from '../Components/ConfirmDialog';
 import { withNavigationFocus } from 'react-navigation';
 import axios from 'axios';
 import * as Config from '../config.json';
@@ -12,7 +13,6 @@ import wait from '../Services/wait';
 import { deviceStorage } from '../Services/devicestorage';
 import Loading from '../Components/Loading';
 import Product from '../Components/Product';
-import BottomSheet from 'reanimated-bottom-sheet';
 
 const pressToExit = 1;
 
@@ -20,13 +20,14 @@ const ProductsPage = (props) => {
     const { colors } = props.theme;
     const branch = props.navigation.getParam('branch');
     const [snackBarVisibility, setSnackBarVisibility] = useState(false);
-    const [searchQuery, setSearchQuery] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState(null);
-    useEffect(()=>{
-        console.log(products);
-    },[products])
+    const [confirmDialogVisibility, setConfrimDialogVisibility] = useState(false);
+
+
+
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
@@ -40,16 +41,16 @@ const ProductsPage = (props) => {
                 });
                 if (res)
                     if (res.data)
-                        if (res.data.products){
-                        const productStateInitial = res.data.products.map((product)=>{
-                            return {
-                                isAddPressed:false,
-                                cartQuantity:0,
-                                ...product,
-                            }
-                        });
+                        if (res.data.products) {
+                            const productStateInitial = res.data.products.map((product) => {
+                                return {
+                                    isAddPressed: false,
+                                    cartQuantity: 0,
+                                    ...product,
+                                }
+                            });
                             setProducts(productStateInitial);
-                    }
+                        }
                 setLoading(false);
                 return;
             }
@@ -63,21 +64,22 @@ const ProductsPage = (props) => {
 
     useEffect(() => {
         fetchProducts();
-        console.log('use effect with fetch products');
     }, [fetchProducts])
 
 
- 
-    
-    
+
+
+
 
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         fetchProducts();
         wait(2000).then(() => setRefreshing(false));
-        console.log('use effect for refresh');
 
     }, [refreshing, fetchProducts]);
+
+
+
     const [exitCount, setExitCount] = useState(0);
     useEffect(() => {
 
@@ -95,7 +97,6 @@ const ProductsPage = (props) => {
             }
         });
 
-        console.log('use effect for exit button');
 
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', () => {
@@ -104,11 +105,51 @@ const ProductsPage = (props) => {
         }
     }, [exitCount]);
 
-    
+
+
+
+
+    const sellProducts = async () => {
+        try {
+            let orders = null;
+            if (products) {
+                orders = products.filter(product => {
+                    return product.cartQuantity > 0
+                }).map(product => {
+                    return {
+                        _id: product._id,
+                        quantity: product.quantity - product.cartQuantity,
+                    }
+                });
+            }
+            const token = await deviceStorage.getItem('token');
+            if (token) {
+                const res = await axios.post(Config.APIURL + '/products/avs', {
+                    orders: orders,
+
+
+                }, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                if (res)
+                    if (res.data)
+                        if (res.data.message)
+                            alert(res.data.message);
+            }
+
+        }
+        catch (e) {
+            console.log(e);
+            errorHandler(e);
+        }
+    }
+
     const productExists = product => {
         return product.name.toLowerCase().includes(searchQuery.trim().toLowerCase());
     }
-    
+
 
     return (
         <>
@@ -116,8 +157,8 @@ const ProductsPage = (props) => {
                 <Snackbar style={{ position: 'absolute', bottom: 0 }} duration={3000} onDismiss={() => { setSnackBarVisibility(false); setExitCount(0); }} visible={snackBarVisibility}>
                     "Press Back again to Exit the App."
             </Snackbar>
-                
-          
+
+
 
                 <Searchbar
                     placeholder="Search your Products"
@@ -132,18 +173,30 @@ const ProductsPage = (props) => {
                         <RefreshControl size={30} refreshing={refreshing} onRefresh={onRefresh} />
                     }
                 >
-                   {products!==null&& <FlatList style={{ flexDirection: 'column' }} numColumns={Dimensions.get('window').width > 800 ? 3 : 2}
-                        data={products} renderItem={({ item,index }: any) => {
-                            if (searchQuery)
-                                return productExists(item) ? <Product
-                                    name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products}  setProducts={setProducts}   index={index} stock={item.quantity} /> : null;
-                            else
-                                return <Product
-                                    name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products}  setProducts={setProducts}   index={index} stock={item.quantity} />
+                    {products !== null && <ConfirmDialog onRefresh={onRefresh} visibility={confirmDialogVisibility} applyAction={sellProducts} setDialogVisibility={setConfrimDialogVisibility} content='Mark Items as sold' />}
+                    {products !== null && <FlatList style={{ flexDirection: 'column' }} numColumns={Dimensions.get('window').width > 800 ? 3 : 2}
+                        data={products} renderItem={({ item, index }: any) => {
+                            if (searchQuery) {
+                                if (productExists(item)) {
+                                    if (item.quantity !== 0)
+                                        return <Product
+                                            name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products} setProducts={setProducts} index={index} stock={item.quantity} />
+
+                                } else {
+                                    return null;
+                                }
+                            }
+
+                            else {
+
+                                if (item.quantity !== 0)
+                                    return <Product
+                                        name={item.name} quantity={item.cartQuantity} isAddPressed={item.isAddPressed} products={products} setProducts={setProducts} index={index} stock={item.quantity} />
+                            }
 
                         }} keyExtractor={(item: any) => item._id} />}
-                   {products&&products.some(product=>product.isAddPressed===true)&& <View style={{ flex: 1,justifyContent:'center',alignItems:'center',margin:10 }}>
-                        <Button style={{ width: 200, height: 50, alignItems: 'center', justifyContent: 'center' }} color={colors.primary} mode='contained' icon='check' >MARK AS SOLD</Button>
+                    {products && products.some(product => product.isAddPressed === true) && <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', margin: 10 }}>
+                        <Button onPress={() => setConfrimDialogVisibility(true)} style={{ width: 200, height: 50, alignItems: 'center', justifyContent: 'center' }} color={colors.primary} mode='contained' icon='check' >MARK AS SOLD</Button>
                     </View>}
 
 

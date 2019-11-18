@@ -1,6 +1,6 @@
-import React, { useState, Dispatch } from 'react';
+import React, {  Dispatch } from 'react';
 import { View } from 'react-native';
-import { withTheme, Avatar, Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
+import { withTheme,  Button, Card, Title,  IconButton } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 const Product = ({ name, stock, theme, quantity, isAddPressed, index, setProducts, products }: { products:Array<any>, index: number, name: string, stock: string, theme: any, quantity: number, setProducts: Dispatch<any>, isAddPressed: boolean }) => {
     const { colors } = theme;
