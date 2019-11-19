@@ -27,7 +27,7 @@ const BranchLists = (props) => {
             }
         }
         catch (e) {
-            errorHandler(e);
+            errorHandler(e,deleteABranch);
         }
     }
     const updateBranch = async () => {
@@ -55,7 +55,7 @@ const BranchLists = (props) => {
             }
         }
         catch (e) {
-            errorHandler(e);
+            errorHandler(e,updateBranch);
         }
     }
 

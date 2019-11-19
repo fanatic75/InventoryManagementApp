@@ -6,7 +6,7 @@ import * as Config from '../config.json';
 import { deviceStorage } from '../Services/devicestorage';
 import errorHandler from '../Services/errorHandler';
 import { Searchbar,  withTheme, FAB ,TextInput, } from 'react-native-paper';
-import EmployeeLists from '../Components/EmployeeLists';
+import AdminEmployeeLists from '../Components/EmployeeLists';
 import wait from '../Services/wait';
 import UpdateDialog from '../Components/UpdateDialog';
 import Loading from '../Components/Loading';
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         bottom: 0,
     },
 })
-const EmployeesPage = (props) => {
+const AdminEmployeesPage = (props) => {
 
     
 
@@ -36,7 +36,6 @@ const EmployeesPage = (props) => {
     const [password,setPassword]=useState(null);
     const [firstName,setFirstName]=useState(null);
     const [lastName,setLastName]=useState(null);
-    const [branch,setBranch]=useState(null);
 
     const fetchEmployees = useCallback(async () => {
         setLoading(true);
@@ -44,13 +43,13 @@ const EmployeesPage = (props) => {
             const token = await deviceStorage.getItem('token');
             if (token) {
 
-                const res = await axios.get(Config.APIURL + '/branches/'+props.branchId+'/employees', {
+                const res = await axios.get(Config.APIURL + '/users/admins', {
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
                 });
                 if (res) {
-                    setEmployees(res.data.users);
+                    setEmployees(res.data);
                 }
                 setLoading(false);
                 return;
@@ -92,7 +91,7 @@ const EmployeesPage = (props) => {
                             password,
                             firstName,
                             lastName,
-                            branch:props.branchId
+                            role:'Admin'
                         }, {
                             headers: {
                                 'Authorization': 'Bearer ' + token,
@@ -100,14 +99,13 @@ const EmployeesPage = (props) => {
     
                         });
                         if (res)
-                            alert('Employee created');
+                            alert('Admin created');
                        }
                         
     
                        
                        setUsername(null);
                        setPassword(null);
-                       setBranch(null);
                        setFirstName(null);
                        setLastName(null);
                        
@@ -122,7 +120,7 @@ const EmployeesPage = (props) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, marginTop: Constants.statusBarHeight }}>
             
             <Searchbar
-                placeholder="Search Employees"
+                placeholder="Search Admins"
                 onChangeText={query => setSearchQuery(query)}
                 value={searchQuery}
                 style={{ margin: 10 }}
@@ -143,7 +141,7 @@ const EmployeesPage = (props) => {
                     {
                         employees && employees.map((employee, index) => {
                             if (employeesExists(employee))
-                                return <EmployeeLists navigation={props.navigation} employees={employees}  index={index} setLoading={setLoading} onRefresh={onRefresh} key={employee._id} firstname={employee.firstname} lastName={employee.lastName} username={employee.username} password={employee.password} userId={employee._id} />
+                                return <AdminEmployeeLists navigation={props.navigation} employees={employees}  index={index} setLoading={setLoading} onRefresh={onRefresh} key={employee._id} firstname={employee.firstname} lastName={employee.lastName} username={employee.username} password={employee.password} userId={employee._id} />
                             return null;
                         })
                     }
@@ -151,9 +149,9 @@ const EmployeesPage = (props) => {
                 </ScrollView>
 
             }
-            <UpdateDialog title='Register An Employee' onRefresh={onRefresh} visibility={updateDialogVisibility} applyAction={registerEmployee} setDialogVisibility={setUpdateDialogVisibility}>
+            <UpdateDialog title='Register An Admin' onRefresh={onRefresh} visibility={updateDialogVisibility} applyAction={registerEmployee} setDialogVisibility={setUpdateDialogVisibility}>
                 <TextInput
-                    label="Enter Employee Username"
+                    label="Enter Admin Username"
                     style={{ margin: 10 }}
                     value={username}
                     onChangeText={value => setUsername(value)}
@@ -161,21 +159,21 @@ const EmployeesPage = (props) => {
                 />
                 <TextInput
                     style={{ margin: 10 }}
-                    label="Enter Employee Password"
+                    label="Enter Admin Password"
                     value={password}
                     onChangeText={value => setPassword(value)}
 
                 />
                 <TextInput
                     style={{ margin: 10 }}
-                    label="Enter Employee First Name"
+                    label="Enter Admin First Name"
                     value={firstName}
                     onChangeText={value => setFirstName(value)}
 
                 />
                 <TextInput
                     style={{ margin: 10 }}
-                    label="Enter Employee Last Name"
+                    label="Enter Admin Last Name"
                     value={lastName}
                     onChangeText={value => setLastName(value)}
 
@@ -204,4 +202,4 @@ const EmployeesPage = (props) => {
 
 
 //@ts-ignore
-export default withTheme(withNavigationFocus(EmployeesPage));
+export default withTheme(withNavigationFocus(AdminEmployeesPage));

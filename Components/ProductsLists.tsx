@@ -29,7 +29,7 @@ const ProductsLists = (props) => {
             }
         }
         catch (e) {
-            errorHandler(e);
+            errorHandler(e,deleteABranch);
         }
     }
     const updateProduct = async () => {
@@ -58,7 +58,7 @@ const ProductsLists = (props) => {
             }
         }
         catch (e) {
-            errorHandler(e);
+            errorHandler(e,updateProduct);
         }
     }
 

@@ -102,15 +102,15 @@ export const LoginPage = (props) => {
                     const id=importantData._id
                     const role = await deviceStorage.getItem('role');
                     if(role==='Admin')
-                    props.navigation.navigate('Admin', { id });
+                    props.navigation.navigate('Admin', { id,role });
                     else
-                    props.navigation.navigate('Home', { branch });
+                    props.navigation.navigate('Home', { branch,role });
                 
                 }
             }
             catch (e) {
                 setLoading(false);
-                errorHandler(e);
+                errorHandler(e,handleAuthentication);
             }
             return;
         }

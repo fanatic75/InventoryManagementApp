@@ -45,7 +45,7 @@ const AdminPage = (props) => {
             throw 'No Token Found';
         } catch (error) {
             setLoading(false);
-            errorHandler(error);
+            errorHandler(error,fetchBranches);
         }
     }, []);
 
@@ -143,7 +143,7 @@ const AdminPage = (props) => {
                 }
             }
             catch (e) {
-                errorHandler(e);
+                errorHandler(e,registerBranch);
             }
         
     }

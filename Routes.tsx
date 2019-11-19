@@ -8,12 +8,14 @@ import ProductsPage from './Pages/ProductsPage'
 import AdminPage from './Pages/AdminPage';
 import Loading from './Components/Loading';
 import ProductsEmployees from './Pages/ProductsEmployees';
+import AdminEmployeesPage from './Pages/AdminEmployeesPage';
 const MyStack = createStackNavigator({
   Loading:{screen:Loading},
   //@ts-ignore
   Admin:{screen:AdminPage},
   Home: { screen: ProductsPage },
   ProductsEmployees:{screen:ProductsEmployees},
+  AdminEmployeesPage:{screen:AdminEmployeesPage}
  // Policy:{screen:Policy},
 //  Help:{screen:Help},
  

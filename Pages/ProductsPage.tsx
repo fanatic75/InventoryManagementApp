@@ -57,7 +57,7 @@ const ProductsPage = (props) => {
             throw 'No Token Found';
         } catch (error) {
             setLoading(false);
-            errorHandler(error);
+            errorHandler(error,fetchProducts);
         }
     }, [branch]);
 
@@ -141,8 +141,7 @@ const ProductsPage = (props) => {
 
         }
         catch (e) {
-            console.log(e);
-            errorHandler(e);
+            errorHandler(e,sellProducts);
         }
     }
 

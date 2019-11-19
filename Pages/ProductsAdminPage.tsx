@@ -48,8 +48,6 @@ const AdminPage = (props) => {
                     }
                 });
                 if (res) {
-                    console.log(res.data);
-                    console.log(res.data.products);
                     setProducts(res.data.products);
                 }
                 setLoading(false);
@@ -58,7 +56,7 @@ const AdminPage = (props) => {
             throw 'No Token Found';
         } catch (error) {
             setLoading(false);
-            errorHandler(error);
+            errorHandler(error,fetchProducts);
         }
     }, []);
 
@@ -110,7 +108,7 @@ const AdminPage = (props) => {
                 
             }
             catch (e) {
-                errorHandler(e);
+                errorHandler(e,registerProduct);
             }
         
     }

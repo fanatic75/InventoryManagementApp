@@ -30,7 +30,7 @@ const EmployeeLists = (props) => {
             }
         }
         catch (e) {
-            errorHandler(e);
+            errorHandler(e,deleteEmployee);
         }
     }
     const updateEmployee = async () => {
@@ -75,7 +75,7 @@ const EmployeeLists = (props) => {
             }
         }
         catch (e) {
-            errorHandler(e);
+            errorHandler(e,updateEmployee);
         }
     }
 

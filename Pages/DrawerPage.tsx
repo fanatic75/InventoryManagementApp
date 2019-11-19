@@ -3,13 +3,23 @@ import React, { useEffect, useState } from "react";
 import Constants from 'expo-constants';
 
 import { View, StyleSheet, ScrollView } from "react-native";
-import { withTheme, Divider, List, Title } from "react-native-paper";
+import { withTheme, List, Title } from "react-native-paper";
 import { deviceStorage } from '../Services/devicestorage';
 
 
 const DrawerPage = (props: { theme: any, navigation: any }) => {
     
     const [name, setName] = useState(null);
+    const [role,setRole]=useState(null);
+    useEffect( ()=>{
+        async function findRole(){
+            const role=await await deviceStorage.getItem('role');
+        
+            setRole(role);
+
+        }
+        findRole();
+    },[role])
     useEffect(() => {
         async function getName() {
             const name = await deviceStorage.getItem('username');
@@ -44,6 +54,14 @@ const DrawerPage = (props: { theme: any, navigation: any }) => {
 
                                 left={() => <List.Icon icon="exit-to-app" />}
                             />
+                             {role==='Admin'&& <List.Item
+                                title="Admin"
+                                onPress={() => {
+                                    props.navigation.navigate('AdminEmployeesPage');
+                                }}
+
+                                left={() => <List.Icon icon="account" />}
+                            />}
                         </List.Section>
                     </View>
                 </View>
